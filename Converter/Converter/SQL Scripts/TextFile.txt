@@ -1,0 +1,100 @@
+﻿USE [SampleDB]
+
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[ConversionRate](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[ConversionUnitsMasterId] [int] NOT NULL,
+	[ConversionRate] [money] NULL,
+	[Description] [nvarchar](500) NULL,
+	[IsActive] [bit] NULL,
+	[CreateDate] [datetime] NULL,
+	[CreatedBy] [bigint] NULL,
+	[UpdatedBy] [bigint] NULL,
+	[UpdateDate] [datetime] NULL,
+ CONSTRAINT [PK_ConversionRate] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/** Object:  Table [dbo].[ConversionUnitsMaster]    Script Date: 16-08-2022 19:42:09 **/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[ConversionUnitsMaster](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[Name] [varchar](100) NOT NULL,
+	[IsActive] [bit] NULL,
+	[CreateDate] [datetime] NULL,
+	[CreatedBy] [bigint] NULL,
+	[UpdatedBy] [bigint] NULL,
+	[UpdateDate] [datetime] NULL,
+ CONSTRAINT [PK_ConversionUnitsMaster] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+SET IDENTITY_INSERT [dbo].[ConversionRate] ON 
+
+INSERT [dbo].[ConversionRate] ([Id], [ConversionUnitsMasterId], [ConversionRate], [Description], [IsActive], [CreateDate], [CreatedBy], [UpdatedBy], [UpdateDate]) VALUES (1, 1, 2.5400, N'centimetersToInches', 1, NULL, NULL, NULL, NULL)
+INSERT [dbo].[ConversionRate] ([Id], [ConversionUnitsMasterId], [ConversionRate], [Description], [IsActive], [CreateDate], [CreatedBy], [UpdatedBy], [UpdateDate]) VALUES (3, 2, 2.5400, N'inchesToCentimeteres', 1, NULL, NULL, NULL, NULL)
+INSERT [dbo].[ConversionRate] ([Id], [ConversionUnitsMasterId], [ConversionRate], [Description], [IsActive], [CreateDate], [CreatedBy], [UpdatedBy], [UpdateDate]) VALUES (6, 3, 28.3500, N'gramsToOunces', 1, NULL, NULL, NULL, NULL)
+INSERT [dbo].[ConversionRate] ([Id], [ConversionUnitsMasterId], [ConversionRate], [Description], [IsActive], [CreateDate], [CreatedBy], [UpdatedBy], [UpdateDate]) VALUES (7, 4, 28.3500, N'onceto gram', 1, NULL, NULL, NULL, NULL)
+INSERT [dbo].[ConversionRate] ([Id], [ConversionUnitsMasterId], [ConversionRate], [Description], [IsActive], [CreateDate], [CreatedBy], [UpdatedBy], [UpdateDate]) VALUES (8, 7, 80.0000, N'DollarToRupee', 1, NULL, NULL, NULL, NULL)
+INSERT [dbo].[ConversionRate] ([Id], [ConversionUnitsMasterId], [ConversionRate], [Description], [IsActive], [CreateDate], [CreatedBy], [UpdatedBy], [UpdateDate]) VALUES (9, 8, 80.0000, N'RupeetoDollar', 1, NULL, NULL, NULL, NULL)
+SET IDENTITY_INSERT [dbo].[ConversionRate] OFF
+SET IDENTITY_INSERT [dbo].[ConversionUnitsMaster] ON 
+
+INSERT [dbo].[ConversionUnitsMaster] ([Id], [Name], [IsActive], [CreateDate], [CreatedBy], [UpdatedBy], [UpdateDate]) VALUES (1, N'centimetersToInches', 1, NULL, NULL, NULL, NULL)
+INSERT [dbo].[ConversionUnitsMaster] ([Id], [Name], [IsActive], [CreateDate], [CreatedBy], [UpdatedBy], [UpdateDate]) VALUES (2, N'inchesToCentimeteres', 1, NULL, NULL, NULL, NULL)
+INSERT [dbo].[ConversionUnitsMaster] ([Id], [Name], [IsActive], [CreateDate], [CreatedBy], [UpdatedBy], [UpdateDate]) VALUES (3, N'gramsToOunces', 1, NULL, NULL, NULL, NULL)
+INSERT [dbo].[ConversionUnitsMaster] ([Id], [Name], [IsActive], [CreateDate], [CreatedBy], [UpdatedBy], [UpdateDate]) VALUES (4, N'ouncesToGrams', 1, NULL, NULL, NULL, NULL)
+INSERT [dbo].[ConversionUnitsMaster] ([Id], [Name], [IsActive], [CreateDate], [CreatedBy], [UpdatedBy], [UpdateDate]) VALUES (5, N'celsiusToFahrenheit', 1, NULL, NULL, NULL, NULL)
+INSERT [dbo].[ConversionUnitsMaster] ([Id], [Name], [IsActive], [CreateDate], [CreatedBy], [UpdatedBy], [UpdateDate]) VALUES (6, N'fahrenheitToCelsius', 1, NULL, NULL, NULL, NULL)
+INSERT [dbo].[ConversionUnitsMaster] ([Id], [Name], [IsActive], [CreateDate], [CreatedBy], [UpdatedBy], [UpdateDate]) VALUES (7, N'rupeeToDollar', 1, NULL, NULL, NULL, NULL)
+INSERT [dbo].[ConversionUnitsMaster] ([Id], [Name], [IsActive], [CreateDate], [CreatedBy], [UpdatedBy], [UpdateDate]) VALUES (8, N'dollarToRupee', 1, NULL, NULL, NULL, NULL)
+SET IDENTITY_INSERT [dbo].[ConversionUnitsMaster] OFF
+
+
+
+
+Create Procedure USP_GetTemperatureConversion  --'fahrenheitToCelsius'  ,4
+@Choice Varchar(50),
+@InputNumber bigint 
+
+as   
+Begin 
+if(@Choice='celsiusToFahrenheit')
+Begin
+ select (@InputNumber * 1.8)+32 as ConversionRate;
+End
+Else
+
+if(@Choice='fahrenheitToCelsius')
+Begin
+
+ select (@InputNumber - 32) / 1.8 as ConversionRate;
+ 
+  
+ 
+End
+ 
+End
+
+
+
+CREATE Procedure USP_GetConversionRate --'centimetersToInches'  
+@Choice Varchar(50)  
+as   
+Begin  
+Select CR.ConversionRate from ConversionUnitsMaster CUM    
+  
+Left  join  ConversionRate CR  on CR.ConversionUnitsMasterId = CUM.ID  
+  
+where CUM.Name =@Choice and  CUM.ISActive=1 and CR.IsActive=1  
+End
